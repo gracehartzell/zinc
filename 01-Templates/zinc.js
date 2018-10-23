@@ -15,12 +15,9 @@
                 email: results[result].email
             };
             renderTemplate(user);
-        }
+        };
         console.log(results); // eslint-disable-line no-console
-    }
-
-    
-
+    };
 
     function renderTemplate(user) {
         let userUl = document.getElementById('z-user-list');
@@ -32,16 +29,17 @@
             <div class="user-location">${ user.city }, ${ user.state }</div>
             <div class="user-email">${ user.email }</div>
           </li>
-        `
+        `;
+        
         userUl.insertAdjacentHTML('beforeend', markup);
-    }
+    };
 
 
     function init() {
         fetch('https://randomuser.me/api/?results=5')
             .then(res => res.json())
             .then(json => populateList(json.results));
-    }
+    };
 
     document.addEventListener('DOMContentLoaded', init);
 
