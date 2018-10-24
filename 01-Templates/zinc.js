@@ -3,44 +3,35 @@
 /* eslint-env browser */
 
 (() => {
+
+    const userTemplate = 
+      `<li class="user">
+        <img class="user-photo" src="{{ picture.large }}" alt="Photo of {{ name.first }} {{ name.last }}">
+        <div class="user-name">{{ name.first }} {{ name.last }}</div>
+        <div class="user-location">{{ location.city }}, {{ location.state }}</div>
+        <div class="user-email">{{ email }}</div>
+      </li>`
+
+    function renderTemplate(templateString, data) {
+        return templateString.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (match, p1) => p1.split('.').reduce((acc, curr) => acc[curr], data)
+        );
+    }
+
+    /*
+    renderTemplate explained:
+    0. The regex that I used will work; however, when there is a variable name with a non-alphanumeric character, it won't capture it. The better way to do it to fully capture the group would be: (/\{\{\s*(.*?)\s*\}\}/g)
+    1. p1 is the captured group (words) within the regex (aka the words)
+    2. split('.') returns an array of the values within p1 (e.g. p1 = picture.large returns ['picture', 'large'])
+    3. reduce is used to apply the function to each element in the array to reduce it to a single value and return something new. This array will give the keys for the object to be applied to the returned data. If the desired data is nested, the function will be able to grab the second keys to get further into the object.
+    */
     function populateList(results) {
-        results.forEach(user => {
-            const userObj = {
-                photo: user.picture.large,
-                firstName: user.name.first,
-                lastName: user.name.last,
-                city: user.location.city,
-                state: user.location.state,
-                email: user.email
-            };
-            renderTemplate(userObj);
+
+        const userList = document.getElementById('z-user-list');
+
+        results.forEach((user) => {
+            const html = renderTemplate(userTemplate, user);
+            userList.insertAdjacentHTML('beforeend', html);
         });
-    };
-
-    function renderTemplate(userObj) {
-        let userUl = document.getElementById('z-user-list');
-
-        const markup = `
-          <li class="user">
-            <img class="user-photo" src="{{ photo }}" alt="Photo of {{ firstName }} {{ lastName }}">
-            <div class="user-name">{{ firstName }} {{ lastName }}</div>
-            <div class="user-location">{{ city }}, {{ state }}</div>
-            <div class="user-email">{{ email }}</div>
-          </li>
-        `
-        const regEx = /{{\s*([\w.]+)\s*}}/g; // matches all '{{ x }}' patterns
-
-        const matches = markup.match(regEx);
-
-        let completeMarkup = markup; // <-- Copy of markup
-
-        matches.forEach(match => { // find all instances that match the regex 
-            const temp1 = match.replace(/{{\W/g, ''); // removing both opening brackets
-            const key = temp1.replace(/\W}}/g, ''); // removing both closing brackets
-            completeMarkup = completeMarkup.replace(match, userObj[key] || '') // apply leftover match to the userObj or leave it empty in case there's no input
-        });
-
-        userUl.insertAdjacentHTML('beforeend', completeMarkup); 
     };
 
     function init() {
