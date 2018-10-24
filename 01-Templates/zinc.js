@@ -23,7 +23,17 @@
     1. p1 is the captured group (words) within the regex (aka the words)
     2. split('.') returns an array of the values within p1 (e.g. p1 = picture.large returns ['picture', 'large'])
     3. reduce is used to apply the function to each element in the array to reduce it to a single value and return something new. This array will give the keys for the object to be applied to the returned data. If the desired data is nested, the function will be able to grab the second keys to get further into the object.
+        3a. Passing data in as the starting point for the function. 
+        3b. Example case if item were name.first -> 
+            The split('.') would first break it into ['name', 'first']
+            next, reduce would take over and produce:
+            _________acc__|__curr___
+                     data | 'name'
+                 data.name| 'first'
+           data.name.first|  --
+
     */
+
     function populateList(results) {
 
         const userList = document.getElementById('z-user-list');
