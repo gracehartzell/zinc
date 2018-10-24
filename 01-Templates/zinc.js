@@ -28,21 +28,19 @@
             <div class="user-email">{{ email }}</div>
           </li>
         `
-        const regEx = /{{\s*([\w.]+)\s*}}/g;
+        const regEx = /{{\s*([\w.]+)\s*}}/g; // matches all '{{ x }}' patterns
 
         const matches = markup.match(regEx);
 
-        let completeMarkup = markup; // <-- Copy
+        let completeMarkup = markup; // <-- Copy of markup
 
-        matches.forEach(match => {
-            const temp1 = match.replace(/{{\W/g, '');
-            const key = temp1.replace(/\W}}/g, '');
-            completeMarkup = completeMarkup.replace(match, userObj[key] || '')
-        })
+        matches.forEach(match => { // find all instances that match the regex 
+            const temp1 = match.replace(/{{\W/g, ''); // removing both opening brackets
+            const key = temp1.replace(/\W}}/g, ''); // removing both closing brackets
+            completeMarkup = completeMarkup.replace(match, userObj[key] || '') // apply leftover match to the userObj or leave it empty in case there's no input
+        });
 
-        console.warn('completeMarkup', completeMarkup);
-
-        userUl.insertAdjacentHTML('beforeend', completeMarkup);
+        userUl.insertAdjacentHTML('beforeend', completeMarkup); 
     };
 
     function init() {
