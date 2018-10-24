@@ -40,8 +40,6 @@
             completeMarkup = completeMarkup.replace(match, userObj[key] || '')
         })
 
-        console.warn('completeMarkup', completeMarkup);
-
         userUl.insertAdjacentHTML('beforeend', completeMarkup);
     };
 
