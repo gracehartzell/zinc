@@ -36,9 +36,9 @@
                 The split('.') would first break it into ['name', 'first']
                 next, reduce would take over and produce:
                 _________acc__|__curr___
-                        data | 'name'
-                   data.name | 'first'
-             data.name.first |  --
+                        data  | 'name'
+                   data.name  | 'first'
+             data.name.first  |  --
 
     */
 
