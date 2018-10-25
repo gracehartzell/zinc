@@ -8,7 +8,8 @@
         (instead will be the user.html). So the call for each new user list 
         will look like renderTemplate('user', user).
     1. In order to do this, you have to run a simple server 
-        (used python -m SimpleHTTPServer, can also do `npm install -g lite-server`), otherwise you'll get a CORS error.
+        (used python -m SimpleHTTPServer, can also do `npm install -g lite-server`), 
+        otherwise you'll get a CORS error.
     2. Remove extraneous information (namely the template string since we don't
         need that anymore!) OR BETTER YET, REMOVE EVERYTHING!
     3. Add in a fetch to get the appropriate HTML file. 
