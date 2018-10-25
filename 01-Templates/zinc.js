@@ -29,7 +29,6 @@
 */
 
 (() => {
-    const userList = document.getElementById('z-user-list');
 
     function renderTemplate(template, users) {
         return fetch(`${template}.html`)
@@ -37,6 +36,8 @@
             .then(template => {
             
               users.forEach((user) => {
+                const userList = document.getElementById('z-user-list');
+                
                 let renderedTemplate = template.replace(/\{\{\s*(.*?)\s*\}\}/g, 
                     (match, p1) => {
                         return p1.split('.').reduce((acc, curr) => acc[curr], user) || '';
