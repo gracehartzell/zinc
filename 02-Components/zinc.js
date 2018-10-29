@@ -2,6 +2,13 @@
 
 /* eslint-env browser */
 
+/*
+    0. Zinc.registerComponent should use Zinc to register the component:
+        • Identify the element name for insertion
+        • template to use
+        • where data is coming from
+    
+ */
 const Zinc = {};
 
 (() => {
@@ -13,7 +20,6 @@ const Zinc = {};
             .then((result) => {
                 element.insertAdjacentHTML('beforeend', result)
             });
-
     }
 
     function renderTemplate(templateFile, dataObject) {
@@ -24,7 +30,7 @@ const Zinc = {};
                     p1.split('.').reduce((acc, curr) => acc[curr], dataObject) || '' ));
     }
 
-    function init() {
+    function renderComponents() {
         fetch('https://randomuser.me/api/?results=5')
             .then(res => res.json())
             .then(res =>
@@ -32,6 +38,10 @@ const Zinc = {};
                     Zinc.registerComponent('user-item', 'user', result)
                 })
             )
+    }
+
+    function init() {
+        renderComponents();
     }
 
     document.addEventListener('DOMContentLoaded', init);
