@@ -2,54 +2,57 @@
 
 /* eslint-env browser */
 
+/*
+    0. The problem is loading an HTML file into the renderTemplate function so that
+        the template will look the same but it will NOT be the index.html file 
+        (instead will be the user.html). So the call for each new user list 
+        will look like renderTemplate('user', user).
+    1. In order to do this, you have to run a simple server 
+        (used python -m SimpleHTTPServer, can also do `npm install -g lite-server`), 
+        otherwise you'll get a CORS error.
+    2. Remove extraneous information (namely the template string since we don't
+        need that anymore!) OR BETTER YET, REMOVE EVERYTHING!
+    3. Add in a fetch to get the appropriate HTML file. 
+        3a. Since we'll now be dealing with HTML and not the template string, 
+            we need to make sure that all references to the template string are 
+            instead referencing the HTML file. 
+        3b. Instead of using the "normal"/usual method of response.json(), we 
+            need to use the .text() method so that it converts the byte stream 
+            into plain text which can then be parsed as HTML by the browser.
+        3c. Once we have the HTML/data, we want to take that and apply it to the 
+            template (this part is pretty much identical to what we did in part 3).
+
+    4. REFACTORING NOTE: I ended up removing the populateList() because it became 
+        somewhat unnecessary and I felt as though I could do the same thing with
+        the same readability by putting what was in that function into the 
+        renderTemplate function. 
+*/
+
 (() => {
-    function populateList(results) {
-        results.forEach(user => {
-            const userObj = {
-                photo: user.picture.large,
-                firstName: user.name.first,
-                lastName: user.name.last,
-                city: user.location.city,
-                state: user.location.state,
-                email: user.email
-            };
-            renderTemplate(userObj);
-        });
-    };
 
-    function renderTemplate(userObj) {
-        let userUl = document.getElementById('z-user-list');
-
-        const markup = `
-          <li class="user">
-            <img class="user-photo" src="{{ photo }}" alt="Photo of {{ firstName }} {{ lastName }}">
-            <div class="user-name">{{ firstName }} {{ lastName }}</div>
-            <div class="user-location">{{ city }}, {{ state }}</div>
-            <div class="user-email">{{ email }}</div>
-          </li>
-        `
-        const regEx = /{{\s*([\w.]+)\s*}}/g; // matches all '{{ x }}' patterns
-
-        const matches = markup.match(regEx);
-
-        let completeMarkup = markup; // <-- Copy of markup
-
-        matches.forEach(match => { // find all instances that match the regex 
-            const temp1 = match.replace(/{{\W/g, ''); // removing both opening brackets
-            const key = temp1.replace(/\W}}/g, ''); // removing both closing brackets
-            completeMarkup = completeMarkup.replace(match, userObj[key] || '') // apply leftover match to the userObj or leave it empty in case there's no input
-        });
-
-        userUl.insertAdjacentHTML('beforeend', completeMarkup); 
+    function renderTemplate(template, users) {
+        return fetch(`${template}.html`)
+            .then(template => template.text())
+            .then(template => {
+            
+              users.forEach((user) => {
+                const userList = document.getElementById('z-user-list');
+                
+                let renderedTemplate = template.replace(/\{\{\s*(.*?)\s*\}\}/g, 
+                    (match, p1) => {
+                        return p1.split('.').reduce((acc, curr) => acc[curr], user) || '';
+                    });
+                userList.insertAdjacentHTML('beforeend', renderedTemplate)
+              });
+            });
     };
 
     function init() {
         fetch('https://randomuser.me/api/?results=5')
             .then(res => res.json())
-            .then(json => populateList(json.results));
+            .then(data => renderTemplate('user', data.results));
     }
 
     document.addEventListener('DOMContentLoaded', init);
 
 })();
-
