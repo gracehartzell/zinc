@@ -7,41 +7,57 @@
         • Identify the element name for insertion
         • template to use
         • where data is coming from
+        ** Take teh stuff you've given me and remember it
+    1. (Zinc._components) -> Want to create a registry of all of the components 
+        so we can use it later on. Keeping the registry 
+    2. init needs to get all of the keys from registerComponent so that it can
+        search for all of the things
+
+    ***** ONLY DATA-RELATED THINGS IN THE USER.JS FILE ***** 
+
     
  */
-const Zinc = {};
+const Zinc = {
+    components: {}
+};
 
 (() => {
 
-    Zinc.registerComponent = function (elementName, templateFile, dataObject) {
-        let element = document.querySelector(elementName);
-
-        renderTemplate(templateFile, dataObject)
-            .then((result) => {
-                element.insertAdjacentHTML('beforeend', result)
-            });
-    }
-
-    function renderTemplate(templateFile, dataObject) {
+    function renderTemplate(templateFile, dataObject) { // returns a promise 
         return fetch(`${templateFile}.html`)
             .then(res => res.text())
-            .then(template =>  
+            .then(template =>
                 template.replace(/\{\{\s*(.*?)\s*\}\}/g, (match, p1) =>
-                    p1.split('.').reduce((acc, curr) => acc[curr], dataObject) || '' ));
+                    p1.split('.').reduce((acc, curr) => acc[curr], dataObject) || ''));
     }
 
-    function renderComponents() {
-        fetch('https://randomuser.me/api/?results=5')
-            .then(res => res.json())
-            .then(res =>
-                res.results.forEach(result => {
-                    Zinc.registerComponent('user-item', 'user', result)
-                })
-            )
+    function renderComponent(element, templateFile, dataObject) {
+        const nodeList = document.querySelectorAll(element);
+
+        nodeList.forEach(node => 
+            renderTemplate(templateFile, dataObject)
+                .then(html => node.insertAdjacentHTML('beforeend', html)) 
+        );
     }
+
+    Zinc.registerComponent = function (elementName, templateFile, dataObject, controller) {
+        Zinc.components[elementName] = {
+            elementName,
+            templateFile,
+            dataObject,
+            controller
+        };
+        renderComponent(elementName, templateFile, dataObject);
+    }
+
+    // function renderComponents() {
+    //     Object.values(Zinc.components).forEach((component) => {
+    //         renderComponent(component.elementName, component.templateFile, component.dataObject);
+    //     });
+    // }
 
     function init() {
-        renderComponents();
+        renderComponent();
     }
 
     document.addEventListener('DOMContentLoaded', init);
