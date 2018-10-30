@@ -50,12 +50,6 @@ const Zinc = {
         renderComponent(elementName, templateFile, dataObject);
     }
 
-    // function renderComponents() {
-    //     Object.values(Zinc.components).forEach((component) => {
-    //         renderComponent(component.elementName, component.templateFile, component.dataObject);
-    //     });
-    // }
-
     function init() {
         renderComponent();
     }
